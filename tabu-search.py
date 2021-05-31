@@ -2,11 +2,6 @@ import os
 import time
 import numpy as np
 from tabulate import tabulate
-import pdb
-import logging
-from datetime import datetime
-
-import numpy as np
 
 
 class TabuSearch:
@@ -129,9 +124,8 @@ class TabuSearch:
 
         return np.array(newN)
 
-    # Short term memory
-
     def short_memory(self, update_ind=0, tenure=3, init=False, mem=0, memValue=0, solution=0):
+        # Short term memory
         """ update_ind: index of the element that was flipped
             solution: this is the candidate solution. we want the flipped value
         """
@@ -178,9 +172,6 @@ class TabuSearch:
 
         # initial neighborhood
         neighborhood = self.neighborhood(current_solution_items)
-
-        # A counter to count number of iterations
-        counter = 0
 
         # keeping track of all the solutions
         solutions = []
