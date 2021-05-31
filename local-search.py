@@ -5,7 +5,7 @@ from tabulate import tabulate
 
 
 class LocalSearch:
-    def __init__(self, capacity, values, weights, solver, time_limit):
+    def __init__(self, capacity, values, weights, time_limit):
         self.capacity, self.values, self.weights, self.time_limit = int(
             capacity), values, weights, time_limit
 
@@ -54,7 +54,7 @@ class LocalSearch:
                 nb[i][i] = 1
         return nb
 
-    def local_search(self):
+    def run(self):
         start_time = time.perf_counter()
         solutionsChecked = 0
 
@@ -94,7 +94,7 @@ def get_optimum_solution(file):
         return int(lines[0].strip().split()[0])
 
 
-def get_solution(file, solver, time_limit):
+def get_solution(file, time_limit):
     capacity, values, weights = 0, [], []
     with open(file, "r") as f:
         lines = f.readlines()
@@ -108,12 +108,12 @@ def get_solution(file, solver, time_limit):
                 pass
 
     local_search = LocalSearch(
-        capacity, values, weights, solver, time_limit)
+        capacity, values, weights, time_limit)
 
-    return local_search.local_search()
+    return local_search.run()
 
 
-def main(folder, current_dataset, solver, time_limit):
+def main(folder, current_dataset, time_limit):
     files = os.listdir(os.path.join(folder, current_dataset))
     results = []
     for file in files:
@@ -121,7 +121,7 @@ def main(folder, current_dataset, solver, time_limit):
             folder, current_dataset+"-optimum", file))
 
         solution, solutionsChecked, time = get_solution(os.path.join(
-            folder, current_dataset, file), solver, time_limit)
+            folder, current_dataset, file), time_limit)
 
         gap = round(((optimum_solution-solution)/optimum_solution)*100, 2)
 
@@ -133,11 +133,10 @@ def main(folder, current_dataset, solver, time_limit):
 
 
 if __name__ == "__main__":
-    folder, datasets, solvers = "KP-instances", {
-        1: "low-dimensional", 2: "large_scale"}, {1: "dynamic_programming_solver",  2: "ortools_solver"}
+    folder, datasets = "KP-instances", {
+        1: "low-dimensional", 2: "large_scale"}
 
     current_dataset = datasets.get(1)
-    solver = solvers.get(1)
     time_limit = 10.00
 
-    main(folder, current_dataset, solver, time_limit)
+    main(folder, current_dataset, time_limit)
