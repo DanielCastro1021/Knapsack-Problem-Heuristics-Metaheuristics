@@ -167,15 +167,6 @@ class TabuSearch:
         start_time = time.perf_counter()
         time_limit = start_time+self.time_limit
 
-        # Set logger configurations
-        now = datetime.now()
-        log_fname = "log/ts__"+now.strftime("%d-%m-%y__%H:%M")+".log"
-        LOG_FORMAT = "%(message)s"
-        logging.basicConfig(filename=log_fname,
-                            level=logging.DEBUG,
-                            format=LOG_FORMAT)
-        logger = logging.getLogger()
-
         solutionsChecked = 0
 
         # initial solution and evaluation
@@ -200,19 +191,9 @@ class TabuSearch:
         while current_time < time_limit:
             solutionsChecked += 1
 
-            logger.info(
-                "\n \n \n -----------ITERATION {}----------- \n".format(counter))
-            logger.info("current solution: {} {} \n".format(
-                current_solution, current_solution_items))
-            logger.info(
-                "length of current-neighborhood: {} \n".format(len(neighborhood)))
-
             # tabu-unactive subset of neighborhood N
             neighborhood_current = self.tabu_active(
                 sMem, sMemVal, neighborhood, current_solution[0], solutions_values)
-
-            logger.info(
-                "length of sub-neighborhood: {} \n".format(len(neighborhood_current)))
 
             # Selecting a candidate
             # if all the solutions are tabu:
@@ -231,22 +212,15 @@ class TabuSearch:
                     solutions_values)]
                 solution = self.evaluate(solution_items)
 
-            logger.info("candiddate solution: {} {} \n".format(
-                solution, solution_items))
-
             # Finding where the flip occurred
             tabu_ind = self.tabu_criteria(
                 solution_items, current_solution_items)
-
-            logger.info("tabooed element index: {} \n".format(tabu_ind))
 
             # updating all variables
             sMem, sMemVal = self.short_memory(update_ind=tabu_ind,
                                               mem=sMem,
                                               memValue=sMemVal,
                                               solution=solution_items)
-            logger.info(
-                "short term memory and value: {} {}".format(sMem, sMemVal))
 
             current_solution_items = np.copy(solution_items)
             current_solution = np.copy(solution)
@@ -255,14 +229,7 @@ class TabuSearch:
             solutions_values.append(current_solution[0])
             solutions_weights.append(current_solution[1])
 
-            logger.info("Solution history {} \n".format(solutions_values))
-
             neighborhood = self.neighborhood(current_solution_items)
-
-            # stopping criteria
-            counter += 1
-            logger.info("iteration: {}, current_solution: {} \n".format(
-                counter, current_solution[0]))
 
             current_time = time.perf_counter()
 
@@ -277,7 +244,7 @@ class TabuSearch:
         print("Best solution: ", best_solution_items)
 
         time_to_solve = round(time.perf_counter()-start_time, 3)
-        return best_solution, time_to_solve
+        return best_solution, time_to_solve, solutionsChecked
 
 
 def get_optimum_solution(file):
@@ -312,13 +279,13 @@ def main(folder, current_dataset, time_limit):
         optimum_solution = get_optimum_solution(os.path.join(
             folder, current_dataset+"-optimum", file))
 
-        solution, time = get_solution(os.path.join(
+        solution, time, solutions_checked = get_solution(os.path.join(
             folder, current_dataset, file), time_limit)
 
         gap = round(((optimum_solution-solution)/optimum_solution)*100, 2)
 
         results.append([file,
-                       optimum_solution, solution, gap, time])
+                       optimum_solution, solution, gap, solutions_checked, time])
 
     print(tabulate(results, headers=[
           "File Name", "Z*", "Z", "Gap %", "Nº Solutions Checked", f"Time (s)"]))
