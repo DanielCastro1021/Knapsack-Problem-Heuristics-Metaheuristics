@@ -157,9 +157,6 @@ class TabuSearch:
         return mem, memValue
 
     def run(self):
-        # Set time counters for execution
-        start_time = time.perf_counter()
-        time_limit = start_time+self.time_limit
 
         solutionsChecked = 0
 
@@ -178,8 +175,12 @@ class TabuSearch:
         solutions_values = []
         solutions_weights = []
 
-        current_time = time.perf_counter()
-        while current_time < time_limit:
+        # Set time counters for execution
+        start_time = time.perf_counter()
+        time_limit = start_time+self.time_limit
+
+        while time.perf_counter() < time_limit:
+
             solutionsChecked += 1
 
             # tabu-unactive subset of neighborhood N
@@ -222,17 +223,7 @@ class TabuSearch:
 
             neighborhood = self.neighborhood(current_solution_items)
 
-            current_time = time.perf_counter()
-
-        best_weight = solutions_weights[np.nanargmax(solutions_values)]
         best_solution = np.nanmax(solutions_values)
-        best_solution_items = solutions[np.nanargmax(solutions_values)]
-
-        print("\nFinal number of solutions checked: ", solutionsChecked)
-        print("Best value found: ", best_solution)
-        print("Weight is: ", best_weight)
-        print("Total number of items selected: ", np.sum(best_solution_items))
-        print("Best solution: ", best_solution_items)
 
         time_to_solve = round(time.perf_counter()-start_time, 3)
         return best_solution, time_to_solve, solutionsChecked
