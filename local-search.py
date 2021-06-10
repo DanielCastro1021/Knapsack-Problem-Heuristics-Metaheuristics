@@ -65,11 +65,8 @@ class LocalSearch:
         best_solution_items = np.copy(current_solution_items)
         best_solution = np.copy(current_solution)
 
-        current_time = time.perf_counter()
-        done = 0
-        while current_time < time_limit and done == 0:
+        while time.perf_counter() < time_limit:
             Neighborhood = self.neighborhood(current_solution_items)
-
             for s in Neighborhood:
                 solutionsChecked += 1
 
@@ -78,8 +75,6 @@ class LocalSearch:
                 if evaluated_solution[0] > best_solution[0]:
                     best_solution_items = np.copy(s)
                     best_solution = np.copy(evaluated_solution)
-                if list(best_solution) == list(current_solution):
-                    done = 1
                 else:
                     current_solution_items = np.copy(best_solution_items)
                     current_solution = np.copy(best_solution)
@@ -137,7 +132,7 @@ if __name__ == "__main__":
     folder, datasets = "KP-instances", {
         1: "low-dimensional", 2: "large_scale"}
 
-    current_dataset = datasets.get(2)
+    current_dataset = datasets.get(1)
     time_limit = 10
 
     main(folder, current_dataset, time_limit)

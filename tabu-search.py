@@ -90,7 +90,6 @@ class TabuSearch:
             return accept
 
     def tabu_active(self, sMem, sMemVal, Neighborhood, cVal, valHist):
-
         # indices of tabu active elements
         active_ind = np.where(sMem > 0)[0]
 
